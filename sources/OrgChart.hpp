@@ -12,29 +12,30 @@ namespace ariel{
     
     // enum string_type{"LEVEL_ORDER", "REVERSE_LEVEL_ORDER", "PREORDER"};
     // template <class T>
+
+    /*
+        create Node class with name(string) and vector of is "child".
+    */
     class Node{
 
     public:
         string _name;
         vector<Node*> sub_node;
-        Node(string name) : _name(name), sub_node(0){}
-        Node(string name, vector<Node*> sub) : _name(name), sub_node(sub){}         
+        Node(string name) : _name(move(name)), sub_node(0){}
+        Node(string name, vector<Node*> sub) : _name(move(name)), sub_node(move(sub)){}         
     };
+    /*
+        the class of th organization, private variable: Node* root 
+    */
     class OrgChart{
     
-    // private:
-    //     Node* _root;
 
     class Iterator{
         private:
             vector<Node*> order_nodes;
             uint curr_indx;
-            // change_root(string root_name){
-            //     Node<T>* root = iter_nodes.at(0);
-            //     _root = new Node<T>(root_name);
-            //     _root
-            // }
         public:
+            //scan the organization with level order method print from up to down step by step.
             void level_order(Node *root){
                 if(root == nullptr){
                     return;
@@ -42,7 +43,7 @@ namespace ariel{
                     order_nodes.clear();
                     queue<Node*> queue_c;
                     queue_c.push(root);
-                    int size;
+                    int size=0;
                     while(!queue_c.empty()){
                         size=queue_c.size();
                         while(size>0){
@@ -58,6 +59,7 @@ namespace ariel{
                     }
                 }
             }
+            //scan the organization with reverse level order method print From the bottom up and from right to left.
             void reverse_level_order(Node *root){
                 if(root == nullptr){
                     return;
@@ -67,14 +69,13 @@ namespace ariel{
                     queue<Node*> queue;
                     s.push(root);
                     queue.push(root);
-                    int size;
+                    int size=0;
                     while(!queue.empty()){
                         size=queue.size();
                         while(size>0){
                             Node *node_p = queue.front();
-                            order_nodes.push_back(node_p);
                             queue.pop();
-                            for (int i = node_p->sub_node.size()-1; i >= 0; i--)
+                            for (int i = int(node_p->sub_node.size()-1); i >= 0; i--)
                             {
                                 s.push(node_p->sub_node.at(size_t(i)));
                                 queue.push(node_p->sub_node.at(size_t(i)));
@@ -82,7 +83,6 @@ namespace ariel{
                         size--;
                         }
                     }
-                    order_nodes.clear();
                     int size_s = s.size();
                     for (size_t i = 0; i < size_s; i++)
                     {
@@ -91,6 +91,7 @@ namespace ariel{
                     }
                 }
             }
+            //scan the organization with level order method print from left to right and from up to down.
             void preorder(Node *root){
                 if(root == nullptr){
                     return;
@@ -102,15 +103,15 @@ namespace ariel{
                         Node *temp = stack.top();
                         order_nodes.push_back(temp);
                         stack.pop();
-                        for (int i = temp->sub_node.size()-1; i >= 0; i--)
+                        for (int i = int(temp->sub_node.size()-1); i >= 0; i--)
                         {
                             stack.push(temp->sub_node.at(size_t(i)));
                         }
                     }
                 }
-                // order_nodes_general = order_nodes;
             }
-            Iterator(Node *node, string order) : curr_indx(0){
+            //Constructor of Iterator
+            Iterator(Node *node, const string &order) : curr_indx(0){
                 if(order == "level_order" && node != nullptr){
                     level_order(node);
                 }else if(order == "reverse_level_order" && node != nullptr){
@@ -122,51 +123,66 @@ namespace ariel{
                 }
                 order_nodes.push_back(nullptr);
             }
+            //enpty Constructor
             Iterator() : curr_indx(0){}
 
+            //operator++ after the promotion
             Iterator& operator++(){
                 this->curr_indx++;
                 return *this;
             }
+            //operator++ before the promotion
             Iterator& operator++(int n){
                 Iterator& iter = *this;
                 this->curr_indx++;
                 return iter;
             }
+            //operator== check the address of specific node* in the vector
             bool operator==(const Iterator& other) const{
                 return this->order_nodes[this->curr_indx] == other.order_nodes[other.curr_indx];
             }
+            //operator !=
             bool operator!=(const Iterator& other) const{
                 return !((*this) == other);
             }
+            //operator* go one step inside
             string& operator*(){
                 return this->order_nodes[this->curr_indx]->_name;
             }
+            //operator-> take the address of the variable
             string* operator->(){
                 return &(order_nodes[curr_indx]->_name);
             }
+            //getters and setters
             vector<Node*> get_order_nodes(){
                 return order_nodes;
             }
-            uint get_curr_indx(){
+            uint get_curr_indx() const{
                 return curr_indx;
             }
             void set_curr_indx(uint current){
                 this->curr_indx = current;
             }
+            void set_order_nodes(Node* &node, size_t temp){
+                order_nodes.at(temp)->sub_node.push_back(node);
+            }
     };
     private:
         Node* _root;
-        Iterator iter;
     public:
+    //default constructor
         OrgChart(){
             this->_root = nullptr;
-            this->iter = Iterator();
         }
+        //copy constructor
+        OrgChart(const OrgChart &org) : _root(new Node(org._root->_name, org._root->sub_node)){}
+            
+        //    
         ~OrgChart(){
             delete _root;
         }
-        OrgChart& add_root(const string root_name){
+        //check if root is null add to him else rape the old one and create new one
+        OrgChart& add_root(const string &root_name){
             if(this->_root == nullptr){
                 this->_root = create_new_node(root_name);
             }else{
@@ -174,151 +190,158 @@ namespace ariel{
             }
             return *this;
         }
-        Node* create_new_node(const string n){
+        //create new Node
+        static Node* create_new_node(const string &n){
             Node *temp = new Node{n};
             return temp;
         }
-        OrgChart& add_sub(const string n1, const string n2){
+        //add new for the organization if n1 in the org
+        OrgChart& add_sub(const string &n1, const string &n2){
+            //if the root null than throw exception
             if(this->_root == nullptr){
                 throw runtime_error(n1 + "dosen`t find in this Org");
             }
+            //if we want to crete new one for the root than do it
             if(_root->_name == n1){
                 Node *new_node = create_new_node(n2);
                 _root->sub_node.push_back(new_node);
             }
+            //if n1 dosent find in the org than throw exception
             else if(!in_sub_childs(n1)){
                 throw runtime_error(n1 + "dosen`t find in this Org");
+
+            //if is find in the org search him and and put n2 in the right place    
             }else{
-                Node *new_node = create_new_node(n2);
-                vector<Node*> vec_child = iter.get_order_nodes();
-                for (size_t i = 0; i < vec_child.size(); i++)
+                size_t temp=0;
+                Node *new_node = OrgChart::create_new_node(n2);
+                for(Iterator iter = this->begin_level_order(); iter != ariel::OrgChart::end_level_order(); iter++)
                 {
-                    if(vec_child[i]->_name == n1){
-                        vec_child[i]->sub_node.push_back(new_node);
+                    if((*iter) == n1){
+                        iter.set_order_nodes(new_node, temp);
+                        iter.get_order_nodes().clear();
                         break;
                     }
+                    temp++;
                 }
             }
             return *this;
         }
-        bool in_sub_childs(const string n){
-
-            iter.level_order(this->_root);
-            vector<Node*> vec = iter.get_order_nodes();
-            // // cout<<vec<<endl;
-            // for (size_t i = 0; i < vec.size(); i++)
-            // {
-            //     // cout<<"in sub child: vec["<<i<<"]"<<vec[i]->_name<<endl;
-            // }
-            
-            // // cout<<"395"<<endl;
-            // // cout<<"vec.size!! "<<vec.size()<<endl;
-            for (size_t i = 0; i < vec.size(); i++)
+        //check if n available in the organization
+        bool in_sub_childs(const string &n){
+            for(Iterator iter = this->begin_level_order(); iter != ariel::OrgChart::end_level_order(); iter++)
             {
-                if(vec[i]->_name == n){
+                if((*iter) == n){
                     return true;
+                    iter.get_order_nodes().clear();
                 }
             }
+
             return false;
             
+        }
+        //Iterator using the scan
+        Node* get_root() const{
+            return _root;
         }
         Iterator begin(){
             return begin_level_order();
         }
-        Iterator end(){
+        static Iterator end(){
             return end_level_order();
         }
         Iterator begin_level_order(){
             return Iterator(this->_root, "level_order");
         }
-        Iterator end_level_order(){
+        static Iterator end_level_order(){
             return Iterator(nullptr, "level_order");
         }
         Iterator begin_reverse_order(){
             return Iterator(this->_root, "reverse_level_order");
         }
-        Iterator reverse_order(){
+        static Iterator reverse_order(){
             return Iterator(nullptr, "reverse_level_order");
 
         }
         Iterator begin_preorder(){
             return Iterator(this->_root, "");
         }
-        Iterator end_preorder(){
+        static Iterator end_preorder(){
             return Iterator(nullptr, "");
         }
-
-        // friend std::ostream& operator<<(ostream& os,const OrgChart &org){
-        //     os << "                "<<org._root->_name<<endl;
-        //     os<<endl;
-        //     os<<"        |--------|--------|"<<endl;
-        //     string space = "       ";
-        //     for (size_t i = 0; i < org._root->sub_node.size(); i++)
-        //     {
-        //         if(org._root->sub_node.size() - i> 0){
-        //             os<<space<<org._root->sub_node[i]->_name<<"             "<<endl;
-        //             if(!org._root->sub_node[i]->sub_node.empty()){
-        //                 for (size_t j = 0; j < org._root->sub_node[i]->sub_node.size(); j++)
-        //                 {
-        //                     os <<  "        |"<<endl;
-        //                     os<<"  "<<org._root->sub_node[i]->sub_node[j]->_name<<endl;
-        //                 }
-        //                 os<<endl;
-        //             }
-        //         }
-        //     }
-        //     return os;
-        // }
-        friend std::ostream& operator<<(ostream& os, OrgChart &org){
-
-            org.iter.level_order(org._root);
-            vector<Node*> nodes_order = org.iter.get_order_nodes();
-            // for (size_t i = 0; i < nodes_order.size(); i++)
-            // {
-            //     cout<<nodes_order.at(i)->_name<< "  ";
-            // }
-            
+        //print the org with some scan
+        friend std::ostream& operator<<(ostream& os,const OrgChart &org){
+            os << "                "<<org._root->_name<<endl;
+            os<<endl;
+            os<<"        |--------|--------|"<<endl;
             string space = "       ";
-            string small_space = "     ";
-            os << "                 "<<org._root->_name<<endl;
-            os<<endl;
-            os<<"        |---------|---------|"<<endl;
-            os<<endl;
-            int total_size = nodes_order.size();
-            size_t k=1;
-            size_t temp=1;
-            bool once = false;
-            while (total_size>=0 && temp < nodes_order.size())
+            for (size_t i = 0; i < org._root->sub_node.size(); i++)
             {
-                if(!once){
-                    for (size_t i = 0; i < org._root->sub_node.size(); i++)
-                    {
-                        os<<space<<nodes_order.at(temp++)->_name;
-                        total_size--;
-                    }
-                once=true;
-                os<<endl;
-                os<<endl<<space<<" |";
-                os<<space<<space<<"     |"<<endl;
-                os<<endl;
-                }
-                for (size_t i = 1; i < org._root->sub_node.size(); i++)
-                {
-                    if(total_size <= 0 || temp >= nodes_order.size()){
-                        break;
-                    }
-                    if(nodes_order.at(k)->_name == org._root->sub_node.at(i-1)->_name){
-                        for (size_t j = 0; j < org._root->sub_node.at(i-1)->sub_node.size(); j++)
+                if(org._root->sub_node.size() - i> 0){
+                    os<<space<<org._root->sub_node[i]->_name<<"             "<<endl;
+                    if(!org._root->sub_node[i]->sub_node.empty()){
+                        for (size_t j = 0; j < org._root->sub_node[i]->sub_node.size(); j++)
                         {
-                            os<<small_space<<nodes_order.at(temp++)->_name;
-                            total_size--;
+                            os <<  "        |"<<endl;
+                            os<<"  "<<org._root->sub_node[i]->sub_node[j]->_name<<endl;
                         }
+                        os<<endl;
                     }
-                    os<<small_space<<" ";
                 }
             }
             return os;
         }
+        // friend std::ostream& operator<<(ostream& os, OrgChart &org){
+
+        //     // org.iter.level_order(org._root);
+        //     // vector<Node*> nodes_order = org.iter.get_order_nodes();
+        //     // for (size_t i = 0; i < nodes_order.size(); i++)
+        //     // {
+        //     //     cout<<nodes_order.at(i)->_name<< "  ";
+        //     // }
+            
+        //     string space = "       ";
+        //     string small_space = "     ";
+        //     os << "                 "<<org._root->_name<<endl;
+        //     os<<endl;
+        //     os<<"        |---------|---------|"<<endl;
+        //     os<<endl;
+        //     // int total_size = nodes_order.size();
+
+        //     int total_size = 0;
+        //     size_t k=1;
+        //     size_t temp=1;
+        //     bool once = false;
+        //     while (total_size>=0 && temp < nodes_order.size())
+        //     {
+        //         if(!once){
+        //             for (size_t i = 0; i < org._root->sub_node.size(); i++)
+        //             {
+        //                 os<<space<<nodes_order.at(temp++)->_name;
+        //                 // total_size--;
+        //             }
+        //         once=true;
+        //         os<<endl;
+        //         os<<endl<<space<<" |";
+        //         os<<space<<space<<"     |"<<endl;
+        //         os<<endl;
+        //         }
+        //         for (size_t i = 1; i < org._root->sub_node.size(); i++)
+        //         {
+        //             if(total_size <= 0 || temp >= nodes_order.size()){
+        //                 break;
+        //             }
+        //             if(nodes_order.at(k)->_name == org._root->sub_node.at(i-1)->_name){
+        //                 for (size_t j = 0; j < org._root->sub_node.at(i-1)->sub_node.size(); j++)
+        //                 {
+        //                     os<<small_space<<nodes_order.at(temp++)->_name;
+        //                     // total_size--;
+        //                 }
+        //             }
+        //             os<<small_space<<" ";
+        //         }
+        //     }
+        //     return os;
+        // }
        
         // OrgChart(){
 

@@ -2,7 +2,7 @@
 #include <OrgChart.hpp>
 #include "doctest.h"
 #include <string>
-
+// #include "Iterator.hpp"
 using namespace std;
 using namespace ariel;
 
@@ -32,8 +32,9 @@ TEST_CASE("Good Test"){
         // vec.push_back("VP_BI");
         // size_t i=0;
         // cout<<"org "<<organization<<endl;
-        vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
-        vec.clear();
+        // vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
+        vector<string> vec; 
+        // vec.clear();
         for (auto it = organization.begin_level_order(); it != organization.end_level_order(); ++it){
             // cout<<"32"<<endl;
             // CHECK((*it) == vec.at(i));
@@ -41,7 +42,7 @@ TEST_CASE("Good Test"){
 
             vec.push_back((*it));
         }
-        cout<<"vec size "<<vec.size()<<endl;
+        // cout<<"vec size "<<vec.size()<<endl;
         // cout<<"vec"<< vec.at(0)<<endl;
         CHECK(vec.at(0) == "CEO");
         CHECK(vec.at(1) == "CTO");
@@ -53,10 +54,10 @@ TEST_CASE("Good Test"){
     }
 
     SUBCASE("start with begin_reverse_order and end with reverse_order"){
-        // vector<string> vec;   
-        vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
+        vector<string> vec;   
+        // vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
     // vec.clear();  
-        vec.clear();   
+        // vec.clear();   
         // vec.push_back("VP_SW");
         // vec.push_back("VP_S");
         // vec.push_back("VP_BI");
@@ -81,10 +82,10 @@ TEST_CASE("Good Test"){
         CHECK(vec[6] == "CEO");
     }
     SUBCASE("start with begin_preorder and end with end_preorder"){
-        // vector<string> vec;
-        vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
+        vector<string> vec;
+        // vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
     // vec.clear();
-        vec.clear();
+        // vec.clear();
         // vec.push_back("CEO");   
         // vec.push_back("CTO");     
         // vec.push_back("VP_SW");
@@ -108,10 +109,10 @@ TEST_CASE("Good Test"){
     }
     SUBCASE("change the root"){
         organization.add_root("root");
-        // vector<string> vec;
-        vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
+        vector<string> vec;
+        // vector<string> vec = {"a", "b", "c", "d", "e", "f", "g"};
     // vec.clear();
-        vec.clear();
+        // vec.clear();
         // vec.push_back("root");   
         // vec.push_back("CTO");     
         // vec.push_back("VP_SW");
@@ -133,14 +134,58 @@ TEST_CASE("Good Test"){
         CHECK(vec[5] == "COO");
         CHECK(vec[6] == "VP_BI");
     }
+    SUBCASE("add sub"){
+        organization.add_root("root");
+        organization.add_sub("CTO", "itzik");
+        organization.add_sub("VP_SW", "CIO");
+        vector<string> vec;
+        for (auto it=organization.begin_preorder(); it!=organization.end_preorder(); ++it) {
+            vec.push_back((*it));
+        }
+        CHECK(vec[0] == "root");
+        CHECK(vec[1] == "CTO");
+        CHECK(vec[2] == "VP_SW");
+        CHECK(vec[3] == "CIO");
+        CHECK(vec[4] == "itzik");
+        CHECK(vec[5] == "CFO");
+        CHECK(vec[6] == "VP_S");
+        CHECK(vec[7] == "COO");
+        CHECK(vec[8] == "VP_BI");
+    }
+    SUBCASE("add to the first sub that he see"){
+        OrgChart organization;
+        organization.add_root("root");
+        organization.add_sub("root", "itzik");
+        organization.add_sub("itzik", "root"); // root -> CEO , itzik -> root
+        organization.add_sub("root", "CEO");
+        vector<string> vec;
+        for (auto it=organization.begin_preorder(); it!=organization.end_preorder(); ++it) {
+            vec.push_back((*it));
+        }
+        CHECK_EQ(vec[0] , "root");
+        CHECK_EQ(vec[1] , "itzik");
+        CHECK_EQ(vec[2] , "root");
+        CHECK_EQ(vec[3] , "CEO");
+    }
 }
 TEST_CASE("Bad Test"){
     OrgChart organization;
-    CHECK_THROWS(organization.add_sub("CEO","add"));
-    organization.add_root("CEO");
-    CHECK_THROWS(organization.add_sub("CEo","C"));
-    organization.add_sub("CEO", "CTO");
-    CHECK_THROWS(organization.add_sub("cto","add"));
-    organization.add_root("root");
-    CHECK_THROWS(organization.add_sub("CEO","add"));   
+    SUBCASE("add sub when the root iis null"){
+        CHECK_THROWS(organization.add_sub("root","add"));
+        CHECK_THROWS(organization.add_sub("CEo","C"));
+        CHECK_THROWS(organization.add_sub("cto","add"));
+        CHECK_THROWS(organization.add_sub("CEO","add"));
+        CHECK_THROWS(organization.add_sub(" ","root"));   
+    }
+    SUBCASE("add invalid sub"){
+        organization.add_root("root");
+        CHECK_THROWS(organization.add_sub("CEO","add"));
+        organization.add_root("CEO");
+        CHECK_THROWS(organization.add_sub("CEo","C"));
+        CHECK_THROWS(organization.add_sub("cto","add"));
+        organization.add_root("root");
+        CHECK_THROWS(organization.add_sub("CEO","add"));   
+        CHECK_THROWS(organization.add_sub("CEO", "CTO"));      ////root -> ..
+        organization.add_root("CEO"); ///CEO -> ..
+    }
 }
