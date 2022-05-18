@@ -32,12 +32,12 @@ int main() {
       .add_sub("COO", "VP_BI");      // Now the VP_BI is subordinate to the COO
 
   cout << organization << endl; /* Prints the org chart in a reasonable format. For example:
-       CEO
-       |--------|--------|
-       CTO      CFO      COO
-       |                 |
-       VP_SW             VP_BI
- */
+//        CEO
+//        |--------|--------|
+//        CTO      CFO      COO
+//        |                 |
+//        VP_SW             VP_BI
+//  */
 
   for (auto it = organization.begin_level_order(); it != organization.end_level_order(); ++it)
   {

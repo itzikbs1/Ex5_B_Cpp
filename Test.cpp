@@ -9,7 +9,7 @@ using namespace ariel;
 TEST_CASE("Good Test"){
     OrgChart organization;
 
-    // organization.add_root("root");
+    organization.add_root("root");
     organization.add_root("CEO")
     .add_sub("CEO", "CTO")    
     .add_sub("CEO", "CFO")         // Now the CFO is subordinate to the CEO
@@ -17,12 +17,16 @@ TEST_CASE("Good Test"){
     .add_sub("CTO", "VP_SW") // Now the VP Software is subordinate to the CTO
     .add_sub("COO", "VP_BI")
     .add_sub("CFO", "VP_S");
+
     // SUBCASE("add a root and change him"){
     //     organization.add_root("root");
     //     organization.add_root("CEO");
     // }
+    // for(auto iter = organization.begin(); iter != organization.end(); iter++){
+    //     cout<<"iter "<<(*iter)<<endl;
+    // }
     // SUBCASE("add_sub"){
-    //     organization.add_sub("CEO", "CTO")         // Now the CTO is subordinate to the CEO
+    //     organization.add_sub("CEO", "CTO")  ;       // Now the CTO is subordinate to the CEO
     //     .add_sub("CEO", "CFO")         // Now the CFO is subordinate to the CEO
     //     .add_sub("CEO", "COO")         // Now the COO is subordinate to the CEO
     //     .add_sub("CTO", "VP_SW") // Now the VP Software is subordinate to the CTO
@@ -137,5 +141,10 @@ TEST_CASE("Bad Test"){
         CHECK_THROWS(organization.add_sub("CEO","add"));   
         CHECK_THROWS(organization.add_sub("CEO", "CTO"));      ////root -> ..
         organization.add_root("CEO"); ///CEO -> ..
+    }
+    SUBCASE("add invaild input"){
+        CHECK_THROWS(organization.add_root("\n"));
+        CHECK_THROWS(organization.add_sub("root", "\n"));
+        CHECK_THROWS(organization.add_sub( "\n", "root"));
     }
 }
