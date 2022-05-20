@@ -1,4 +1,3 @@
-// #pragma once
 #include <iostream>
 #include <stdlib.h>
 #include <string>
@@ -15,7 +14,7 @@ namespace ariel{
             if(root == nullptr){
                 return;
             }else{
-                this->order_nodes.clear();
+                // this->order_nodes.clear();
                 queue<Node*> queue_c;
                 queue_c.push(root);
                 int size=0;
@@ -246,23 +245,66 @@ namespace ariel{
             return OrgChart::Iterator(nullptr, "");
         }
         // //print the org with some scan
+        // std::ostream& operator<<(ostream& os,const OrgChart &org){
+        //     os << "                "<<org._root->_name<<endl;
+        //     os<<endl;
+        //     os<<"        |--------|--------|"<<endl;
+        //     string space = "       ";
+        //     for (size_t i = 0; i < org._root->sub_node.size(); i++)
+        //     {
+        //         if(org._root->sub_node.size() - i> 0){
+        //             os<<space<<org._root->sub_node[i]->_name<<"             "<<endl;
+        //             if(!org._root->sub_node[i]->sub_node.empty()){
+        //                 for (size_t j = 0; j < org._root->sub_node[i]->sub_node.size(); j++)
+        //                 {
+        //                     os <<"        |"<<endl;
+        //                     os<<"      "<<org._root->sub_node[i]->sub_node[j]->_name<<endl;
+        //                 }
+        //                 os<<endl;
+        //             }
+        //         }
+        //     }
+        //     return os;
+        // }
+
+        //print the org with some scan
         std::ostream& operator<<(ostream& os,const OrgChart &org){
-            os << "                "<<org._root->_name<<endl;
-            os<<endl;
-            os<<"        |--------|--------|"<<endl;
-            string space = "       ";
-            for (size_t i = 0; i < org._root->sub_node.size(); i++)
-            {
-                if(org._root->sub_node.size() - i> 0){
-                    os<<space<<org._root->sub_node[i]->_name<<"             "<<endl;
-                    if(!org._root->sub_node[i]->sub_node.empty()){
-                        for (size_t j = 0; j < org._root->sub_node[i]->sub_node.size(); j++)
-                        {
-                            os <<"        |"<<endl;
-                            os<<"      "<<org._root->sub_node[i]->sub_node[j]->_name<<endl;
+            if(org._root != nullptr){
+                os<<"             ";
+                bool first_time=true;
+                bool last_rotation=false;
+                // this->order_nodes.clear();
+                queue<OrgChart::Node*> queue_c;
+                queue_c.push(org._root);
+                int size=0;
+                // string len = "    ";
+                while(!queue_c.empty()){
+                    size=queue_c.size();
+                    while(size>0){
+                        OrgChart::Node *node_p = queue_c.front();
+                        // this->order_nodes.push_back(node_p);
+
+                        // if(node_p->sub_node.size() < 2){
+                        //     // cout<<"node p: "<<node_p->_name<<endl;
+                        //     last_rotation=true;
+                        // }
+                        if(!first_time && !last_rotation){
+                        os<<"     ";
                         }
-                        os<<endl;
+                        // if(last_rotation){
+                        //     os<<"   ";
+                        // }
+                        
+                        first_time=false;
+                        os<<node_p->_name;
+                        queue_c.pop();
+                        for (size_t i = 0; i < node_p->sub_node.size(); i++)
+                        {
+                            queue_c.push(node_p->sub_node.at(i));
+                        }
+                    size--;
                     }
+                    os<<"\n\n";
                 }
             }
             return os;

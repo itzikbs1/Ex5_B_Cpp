@@ -145,6 +145,5 @@ TEST_CASE("Bad Test"){
     SUBCASE("add invaild input"){
         CHECK_THROWS(organization.add_root("\n"));
         CHECK_THROWS(organization.add_sub("root", "\n"));
-        CHECK_THROWS(organization.add_sub( "\n", "root"));
     }
 }
