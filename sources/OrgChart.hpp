@@ -24,7 +24,10 @@ class OrgChart{
         string _name;
         vector<Node*> sub_node;
         Node(string name) : _name(move(name)), sub_node(0){}
-        Node(string name, vector<Node*> sub) : _name(move(name)), sub_node(move(sub)){}         
+        Node(string name, vector<Node*> sub) : _name(move(name)), sub_node(move(sub)){}    
+        ~Node(){
+
+        }     
     };
 
     class Iterator{
@@ -52,6 +55,8 @@ class OrgChart{
     //default constructor
     OrgChart();
     OrgChart(const OrgChart &org);
+    OrgChart(OrgChart &&other) noexcept;
+    OrgChart& operator=(OrgChart&& other) noexcept;
     ~OrgChart();
     OrgChart& add_root(const string &root_name);
     static Node* create_new_node(const string &n);

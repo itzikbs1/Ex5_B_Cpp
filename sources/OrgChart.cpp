@@ -134,13 +134,22 @@ namespace ariel{
         }
         //copy constructor
         OrgChart::OrgChart(const OrgChart &org) : _root(new Node(org._root->_name, org._root->sub_node)){}
-            
+        
+        OrgChart::OrgChart(OrgChart &&other) noexcept{
+            this->_root = other._root;
+            other._root = nullptr;
+        }
+        OrgChart& OrgChart::operator=(OrgChart&& other) noexcept{
+            this->_root = other._root;
+            other._root = nullptr;
+            return *this;
+        }
         // //distructor    
         OrgChart::~OrgChart(){
             this->delete_organization(this->_root);
         }
         void OrgChart::delete_organization(Node *root){
-            if(root == NULL){
+            if(root == nullptr){
                 return;
             }
             for (size_t i = 0; i < root->sub_node.size(); i++)
@@ -193,10 +202,11 @@ namespace ariel{
             else{
                 size_t temp=0;
                 bool ans =false;
-                Node *new_node = this->create_new_node(n2);
-                for(auto iter = this->begin_level_order(); iter != this->end_level_order(); ++iter)
+                
+                for(auto iter = this->begin_level_order(); iter != OrgChart::end_level_order(); ++iter)
                 {
                     if((*iter) == n1){
+                        Node *new_node = this->create_new_node(n2);
                         iter.set_order_nodes(new_node, temp);
                         // iter.get_order_nodes().clear();
                         ans=true;
