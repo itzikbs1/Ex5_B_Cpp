@@ -198,7 +198,6 @@ namespace ariel{
                 this->_root->sub_node.push_back(new_node);
             }
             //if is find in the org search him and put n2 in the right place    
-            // }
             else{
                 size_t temp=0;
                 bool ans =false;
@@ -208,7 +207,6 @@ namespace ariel{
                     if((*iter) == n1){
                         Node *new_node = this->create_new_node(n2);
                         iter.set_order_nodes(new_node, temp);
-                        // iter.get_order_nodes().clear();
                         ans=true;
                         break;
                     }
@@ -220,26 +218,19 @@ namespace ariel{
             }
             return *this;
         }
-        //Iterator using the scan
-        // OrgChart::Node* OrgChart::get_root() const{
-        //     return this->_root;
-        // }
         OrgChart::Iterator OrgChart::begin(){
-            // cout<<"284"<<endl;
             return this->begin_level_order();
         }
         OrgChart::Iterator OrgChart::end(){
             return this->end_level_order();
         }
         OrgChart::Iterator OrgChart::begin_level_order(){
-            // cout<<"291"<<endl;
             if(this->_root == nullptr){
                 throw runtime_error("chart is empty!");
             }
             return OrgChart::Iterator(this->_root, "level_order");
         }
         OrgChart::Iterator OrgChart::end_level_order(){
-            // cout<<"295"<<endl;
             if(this->_root == nullptr){
                 throw runtime_error("chart is empty!");
             }
@@ -272,7 +263,48 @@ namespace ariel{
             }
             return OrgChart::Iterator(nullptr, "");
         }
-        // //print the org with some scan
+        //print the org with some scan
+        std::ostream& operator<<(ostream& os,const OrgChart &org){
+            if(org._root != nullptr){
+                os<<"             ";
+                bool first_time=true;
+                bool last_rotation=false;
+                // this->order_nodes.clear();
+                queue<OrgChart::Node*> queue_c;
+                queue_c.push(org._root);
+                int size=0;
+                string start_with = "V";
+                bool start_wit = false;
+                // string len = "    ";
+                while(!queue_c.empty()){
+                    size=queue_c.size();
+                    while(size>0){
+                        OrgChart::Node *node_p = queue_c.front();
+                        if(!first_time && !last_rotation){
+                        os<<"     ";
+                        }
+                        if(start_with[0] == node_p->_name[0] && start_wit){
+                            os<<"      ";
+                        }
+                        if(start_with[0] == node_p->_name[0]){
+                            start_wit = true;
+                        }
+                        first_time=false;
+                        os<<node_p->_name;
+                        queue_c.pop();
+                        for (size_t i = 0; i < node_p->sub_node.size(); i++)
+                        {
+                            queue_c.push(node_p->sub_node.at(i));
+                        }
+                    size--;
+                    }
+                    os<<"\n\n";
+                }
+            }
+            return os;
+        }
+
+        //print the org with some scan
         // std::ostream& operator<<(ostream& os,const OrgChart &org){
         //     os << "                "<<org._root->_name<<endl;
         //     os<<endl;
@@ -294,47 +326,4 @@ namespace ariel{
         //     }
         //     return os;
         // }
-
-        //print the org with some scan
-        std::ostream& operator<<(ostream& os,const OrgChart &org){
-            if(org._root != nullptr){
-                os<<"             ";
-                bool first_time=true;
-                bool last_rotation=false;
-                // this->order_nodes.clear();
-                queue<OrgChart::Node*> queue_c;
-                queue_c.push(org._root);
-                int size=0;
-                // string len = "    ";
-                while(!queue_c.empty()){
-                    size=queue_c.size();
-                    while(size>0){
-                        OrgChart::Node *node_p = queue_c.front();
-                        // this->order_nodes.push_back(node_p);
-
-                        // if(node_p->sub_node.size() < 2){
-                        //     // cout<<"node p: "<<node_p->_name<<endl;
-                        //     last_rotation=true;
-                        // }
-                        if(!first_time && !last_rotation){
-                        os<<"     ";
-                        }
-                        // if(last_rotation){
-                        //     os<<"   ";
-                        // }
-                        
-                        first_time=false;
-                        os<<node_p->_name;
-                        queue_c.pop();
-                        for (size_t i = 0; i < node_p->sub_node.size(); i++)
-                        {
-                            queue_c.push(node_p->sub_node.at(i));
-                        }
-                    size--;
-                    }
-                    os<<"\n\n";
-                }
-            }
-            return os;
-        }
 };
