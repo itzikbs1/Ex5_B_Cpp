@@ -124,6 +124,7 @@ TEST_CASE("Good Test"){
 }
 TEST_CASE("Bad Test"){
     OrgChart organization;
+    OrgChart org;
     SUBCASE("add sub when the root iis null"){
         CHECK_THROWS(organization.add_sub("root","add"));
         CHECK_THROWS(organization.add_sub("CEo","C"));
@@ -145,5 +146,16 @@ TEST_CASE("Bad Test"){
     SUBCASE("add invaild input"){
         CHECK_THROWS(organization.add_root("\n"));
         CHECK_THROWS(organization.add_sub("root", "\n"));
+        CHECK_THROWS(organization.add_root("\r"));
+        CHECK_THROWS(organization.add_sub("root", "\r"));
+        CHECK_THROWS(organization.add_root("\t"));
+        CHECK_THROWS(organization.add_sub("root", "\t"));
+        CHECK_THROWS(organization.add_root(""));
+        CHECK_THROWS(organization.add_sub("root", ""));
+        CHECK_THROWS(organization.add_root(" "));
+        CHECK_THROWS(organization.add_sub("root", " "));
+        // CHECK_THROWS(organization.add_root("\t"));
+        // CHECK_THROWS(organization.add_sub("root", "\t"));
+        // CHECK_THROWS(org.add_root())
     }
 }

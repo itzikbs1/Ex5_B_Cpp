@@ -168,7 +168,7 @@ namespace ariel{
         }
         // //check if root is null add to him else rape the old one and create new one
         OrgChart& OrgChart::add_root(const string &root_name){
-            if(root_name == "\n"){
+            if(root_name == "\n" ||  root_name == "\r" || root_name == "\t" ||  root_name.empty() ||  root_name == " "){
                 throw runtime_error("this is invalid input");
             }
             if(this->_root == nullptr){
@@ -189,7 +189,7 @@ namespace ariel{
             if(this->_root == nullptr){
                 throw runtime_error(n1 + " dosen`t find in this Org!!!");
             }
-            if(n2 == "\n"){
+            if(n2 == "\n" ||  n2 == "\r" ||  n2 == "\t" ||  n2.empty() ||  n2 == " "){
                 throw runtime_error("this is invalid input");
             }
             // //if we want to crete new one for the root than do it
