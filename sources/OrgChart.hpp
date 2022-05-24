@@ -24,10 +24,7 @@ class OrgChart{
         string _name;
         vector<Node*> sub_node;
         Node(string name) : _name(move(name)), sub_node(0){}
-        Node(string name, vector<Node*> sub) : _name(move(name)), sub_node(move(sub)){}    
-        ~Node(){
-
-        }     
+        Node(string name, vector<Node*> sub) : _name(move(name)), sub_node(move(sub)){}       
     };
 
     class Iterator{
