@@ -154,8 +154,13 @@ TEST_CASE("Bad Test"){
         CHECK_THROWS(organization.add_sub("root", ""));
         CHECK_THROWS(organization.add_root(" "));
         CHECK_THROWS(organization.add_sub("root", " "));
-        // CHECK_THROWS(organization.add_root("\t"));
-        // CHECK_THROWS(organization.add_sub("root", "\t"));
-        // CHECK_THROWS(org.add_root())
+        CHECK_THROWS(organization.begin_level_order());
+        CHECK_THROWS(organization.end_level_order());
+        CHECK_THROWS(organization.begin());
+        CHECK_THROWS(organization.end());
+        CHECK_THROWS(organization.begin_reverse_order());
+        CHECK_THROWS(organization.reverse_order());
+        CHECK_THROWS(organization.begin_preorder());
+        CHECK_THROWS(organization.end_preorder());
     }
 }
